@@ -7,7 +7,11 @@
 from flask_socketio import emit, disconnect
 from flask import request
 from flask_jwt_extended import decode_token
-from model import User  # Import the User model here after db is initialized
+
+# IMPORTANT: import any objects from your model.py file that you need to work with here
+#            uncomment the line below and update it to match your model
+#from model import oneOfMyObjects, anotherOfMyObjects
+
 from extensions import db, socketio  # Import socketio and db from extensions.py
 
 # Function to register WebSocket event handlers for real-time communication

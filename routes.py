@@ -12,7 +12,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import decode_token
 from extensions import db  # Import db from the newly created extensions.py file
 import jwt
-from model import User, RoboChatter  # Import the User and RoboChatter models
+
+# IMPORTANT: import any objects from your model.py file that you need to work with here
+#            uncomment the line below and update it to match your model
+#from model import oneOfMyObjects, anotherOfMyObjects
 
 # PLACE UTILITY FUNCTIONS HERE
 # For example, you can define a function to validate the JWT token
