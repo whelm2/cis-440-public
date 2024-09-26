@@ -17,7 +17,7 @@ window.addEventListener('load', () => {
 
     // NOTE: SET CALLBACKS FOR SOCKET EVENTS HERE (MAPPED TO FUNCTIONS BELOW)
 
-    //ChatSocket.setMessageCallback(showNewChat);
+    //ChatSocket.setMessageCallback(sendChat);
 
 });
 
