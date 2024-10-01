@@ -6,16 +6,25 @@
 //              When you do, you can also ask it to create a function to
 //              handle the event that will be called by the listener.
 
+function displayRegister() {
+    var registerModal = new bootstrap.Modal(document.getElementById('createAccountModal'));
+    registerModal.show();
+}
 
-
-// Wait until the DOM is fully loaded before attaching event listeners
+// Wait until the DOM is fully loaded before attaching the event listener
 document.addEventListener("DOMContentLoaded", function() {
+    // Add the event listener to the form submit event
+    document.getElementById("createAccountForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the default form submission
 
-    //add event listeners for any events from your index.html page
-    //that you would like to capture and handle
-    //
-    //Note: a good appreach is to map the event to a function defined
-    //      below in the script. This way you can keep your code organized.
+        // Grab the input values from the form fields
+        const email = document.getElementById("createEmail").value;
+        const password = document.getElementById("createPassword").value;
+        const description = document.getElementById("createDescription").value;
+
+        // Call the handleRegistration function with the grabbed values
+        handleRegistration(email, password, description);
+    });
 });
 
 
@@ -53,16 +62,11 @@ function handleLoginClick(username, password, attempt = 1) {
             alert('Login failed: ' + data.error);
         } else {
 
-            //NOTE: EDIT THIS AREA TO HANDLE SUCCESSFUL LOGIN
-
-            //HERE WE ARE STORING THE JWT TOKEN IN LOCAL STORAGE
-            //WITH THE KEY jwtToken, SO WE CAN RETRIEVE LATER FROM
-            //ANOTHER PAGE IN THE APP
+            // Storing the JWT token in localStorage
             localStorage.setItem('jwtToken', data.token);
 
-            // REDIRECT TO ANOTHER PAGE AFTER SUCCESSFUL LOGIN
-            // Note: map this to a page serving route in routes.py
-            window.location.href = '/your_route_here';
+            // Redirect to another page after successful login
+            window.location.href = '/dashboard';  // Replace '/dashboard' with your desired route
         }
     })
     .catch((error) => {
@@ -72,19 +76,18 @@ function handleLoginClick(username, password, attempt = 1) {
 }
 
 // TEMPLATE: handling registration and displaying success message
-// Sends a registration request to the server with email, name, and password (up to 3 retries on server error)
-function handleRegistration(email, name, password, attempt = 1) {
-    //assumes you have a route in routes.py mapped to /create_account
+// Sends a registration request to the server with email, password, and optional description (up to 3 retries on server error)
+function handleRegistration(email, password, description = "", attempt = 1) {
+    // Assumes you have a route in routes.py mapped to /create_account
     fetch('/create_account', {
         method: 'POST',  // Send POST request to create_account endpoint
         headers: {
             'Content-Type': 'application/json',  // Send data as JSON
         },
         body: JSON.stringify({
-            //Note: update these fields to match your route in routes.py
             email: email,  // Include email in the request body
-            name: name,  // Include name in the request body
-            password: password  // Include password in the request body
+            password: password,  // Include password in the request body
+            description: description  // Optional description
         }),
     })
     .then(response => {
@@ -92,7 +95,7 @@ function handleRegistration(email, name, password, attempt = 1) {
             // Retry the registration on internal server error (up to 3 attempts)
             console.warn('Internal Server Error. Retrying attempt:', attempt);
             return new Promise((resolve) => setTimeout(resolve, 300))  // 300ms delay between retries
-                .then(() => handleRegistration(email, name, password, attempt + 1));  // Recursive retry call
+                .then(() => handleRegistration(email, password, description, attempt + 1));  // Recursive retry call
         }
         return response.json();  // Parse response as JSON if not a 500 error
     })
@@ -103,16 +106,6 @@ function handleRegistration(email, name, password, attempt = 1) {
         } else {
             // Display success message upon successful account creation
             alert('Account created successfully!');
-
-            // EXAMPLE: IF USER WAAS IN A MODAL, HIDE THE MODAL AFTER SUCCESSFUL REGISTRATION
-            //const registerModalElement = document.getElementById('registerModal');
-            //const registerModal = bootstrap.Modal.getInstance(registerModalElement);  // Get existing modal instance
-            //if (registerModal) {
-            //    registerModal.hide();  // Hide the modal if instance exists
-            //} else {
-            //    const newModal = new bootstrap.Modal(registerModalElement);
-            //    newModal.hide();  // Hide the modal if new instance is created
-            //}
         }
     })
     .catch((error) => {
@@ -129,3 +122,4 @@ function handleRegistration(email, name, password, attempt = 1) {
 //    const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));  // Initialize the modal
 //    registerModal.show();  // Show the modal
 //}
+
