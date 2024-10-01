@@ -30,6 +30,10 @@ routes_blueprint = Blueprint('routes', __name__)
 def index():
     return render_template('index.html')  # Render the index.html template when accessing '/'
 
+@routes_blueprint.route('/inside')
+def inside():
+    return render_template('example_app_page.html')  # Render the index.html template when accessing '/'
+
 
 # Route to handle account creation
 @routes_blueprint.route('/create_account', methods=['POST'])

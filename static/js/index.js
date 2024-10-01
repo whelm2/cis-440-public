@@ -25,6 +25,20 @@ document.addEventListener("DOMContentLoaded", function() {
         // Call the handleRegistration function with the grabbed values
         handleRegistration(email, password, description);
     });
+
+    // Add the event listener to the login form submit event
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Grab the input values from the form fields
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        // Call the handleLoginClick function with the grabbed values
+        handleLoginClick(email, password);
+    });
+
+
 });
 
 
@@ -66,7 +80,7 @@ function handleLoginClick(username, password, attempt = 1) {
             localStorage.setItem('jwtToken', data.token);
 
             // Redirect to another page after successful login
-            window.location.href = '/dashboard';  // Replace '/dashboard' with your desired route
+            window.location.href = '/inside';  // Replace '/dashboard' with your desired route
         }
     })
     .catch((error) => {
