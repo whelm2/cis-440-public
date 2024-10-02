@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from extensions import db  # Import db from the newly created extensions.py file
 from model import User  # Import the User model
+import jwt
 
 # Helper function to decode the JWT token and validate the user
 def validate_token(request):
@@ -13,12 +14,14 @@ def validate_token(request):
 
     try:
         token = auth_header.split(" ")[1]  # Split the header and get the token (format: "Bearer <token>")
-        decoded_token = decode_token(token)  # Decode the JWT token
+        decoded_token = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])  # Decode the JWT token
         user = User.query.filter_by(email=decoded_token['sub']).first()  # Find the user by email
         if not user:
             return None, jsonify({"error": "User not found!"}), 404  # Return error if user not found
         return user, None  # Return the user if the token is valid
-    except Exception as e:
+    except jwt.ExpiredSignatureError:
+        return None, jsonify({"error": "Token has expired"}), 401  # Token has expired
+    except jwt.InvalidTokenError as e:
         return None, jsonify({"error": f"Token error: {str(e)}"}), 401  # Return error if token validation fails
 
 
