@@ -1,26 +1,9 @@
-// DESCRIPTION: the DataModel object is accessible by any other
-//scripts linked and loaded on the same page.  It handles all of the
-//communications with your api, and the goal is to store state information
-//and data in this object as well when possible, in order to minimize
-//API calls and to create a single point of access for data in the 
-//front-end of your app.
-
 const DataModel = {
-    items: [],  // Placeholder for data fetched from the API
+    users: [],  // Placeholder for data fetched from the API
+    currentUser: null,  // Placeholder for the currently selected user
     baseUrl: `${window.location.protocol}//${window.location.host}/`,  // Base URL dynamically generated for API requests
 
-    /**
-     * Helper function for making authenticated API requests with retries.
-     * This function sends a request to the given URL using the provided options.
-     * It automatically adds the Authorization header with the JWT token from local storage.
-     * If the request fails, it retries up to 3 times before throwing an error.
-     *
-     * IMPORTANT: Use this to make API calls in all of your functions below.
-     *            See example of use below.
-     * @param {string} url - The API endpoint to send the request to.
-     * @param {object} options - Optional fetch options (e.g., method, headers).
-     * @returns {Promise<object>} - The JSON response from the API.
-     */
+    // Helper function for making authenticated API requests with retries
     async fetchWithAuth(url, options = {}) {
         const headers = {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,  // Add JWT token for authentication
@@ -28,40 +11,84 @@ const DataModel = {
         };
         options.headers = headers;
 
-        // Retry logic: attempt the request up to 3 times
         for (let attempt = 1; attempt <= 3; attempt++) {
             try {
                 const response = await fetch(url, options);  // Send the request using fetch
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);  // Throw an error if response is not OK
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return await response.json();  // Parse and return the response JSON if successful
             } catch (error) {
                 if (attempt === 3) {
-                    // If this is the third and final attempt, rethrow the error
                     throw error;
                 }
-                // Optional: add a short delay (e.g., 200ms) before retrying
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 200));  // Optional delay before retrying
             }
         }
     },
 
-    //EXAMPLE - function to grab data from a route, store it in the object,
-    //and return it to the caller.
+    // Function to get all users and store them in the 'users' variable
+    async getAllUsers() {
+        const url = this.baseUrl + 'users';  // Construct the full API URL
+        try {
+            const users = await this.fetchWithAuth(url, { method: 'GET' });
+            this.users = users;  // Store the fetched users
+            return users;  // Return the users
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            throw error;
+        }
+    },
 
-    //async getAllItems() {
-    //    const url = this.baseUrl + '<your route here>';  // Construct the full API URL
-    //    try {
-    //        const myItems = await this.fetchWithAuth(url, { method: 'GET' });  // Send GET request to fetch data
-    //        this.items= myItems;  // Store the fetched data in the object (optional) (note the variable items is defined above)
-    //        return myItems;  // Return the list of RoboChatters
-    //    } catch (error) {
-    //        console.error('Error fetching RoboChatters:', error);  // Log any errors that occur
-    //        throw error;  // Rethrow the error so it can be handled elsewhere
-    //    }
-    //},
+    // Function to set the current user by their ID
+    setSelectedUser(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (user) {
+            this.currentUser = user;  // Set the selected user
+        } else {
+            console.error('User not found');
+        }
+    },
 
+    // Function to get the currently selected user
+    getCurrentUser() {
+        return this.currentUser;
+    },
 
+    // Function to edit the selected user (update email and description)
+    async editSelectedUser(email, description) {
+        if (!this.currentUser) {
+            console.error('No user selected');
+            return;
+        }
+        const url = this.baseUrl + `edit_user/${this.currentUser.id}`;  // API URL for editing user
+        const body = JSON.stringify({ email, description });
+
+        try {
+            const updatedUser = await this.fetchWithAuth(url, { method: 'PUT', body });
+            // Update the currentUser and users array with new values
+            this.currentUser.email = updatedUser.email;
+            this.currentUser.description = updatedUser.description;
+
+            // Update the user in the users array
+            const index = this.users.findIndex(u => u.id === this.currentUser.id);
+            if (index !== -1) {
+                this.users[index] = this.currentUser;
+            }
+            return updatedUser;
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw error;
+        }
+    },
+
+    // Function to initialize the data model by loading all users
+    async initialize() {
+        try {
+            await this.getAllUsers();  // Call the function to get all users and store them in the model
+            console.log('Data model initialized with users:', this.users);
+        } catch (error) {
+            console.error('Error initializing data model:', error);
+        }
+    }
 };
-

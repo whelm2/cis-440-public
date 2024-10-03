@@ -32,25 +32,84 @@
     <script src="static/js/chatwindow.js"></script> <!-- Handles user interactions on the websocket -->
 </head>
 <body>
-    You are logged in and inside the app!
+    <div class="container mt-4">
+        <h1 class="text-center">Welcome to Your App</h1>
 
-    <!-- Create a baselayout for your page here
-            - You can hand this page to chatgpt, tell it you are building
-                an app using bootstrap, describe the layout you want, and let
-                add the html for your layout to this part of the page
-            - Focus on the base layout for this part, don't worry about any
-                pop-up windows (known as modals) in your discussion with
-                chatgpt, just focus on the page layout
-    -->
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">Main</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="account-management-tab" data-bs-toggle="tab" data-bs-target="#account-management" type="button" role="tab" aria-controls="account-management" aria-selected="false">Account Management</button>
+            </li>
+        </ul>
 
+        <!-- Tab content -->
+        <div class="tab-content mt-3" id="myTabContent">
+            <!-- Main tab content -->
+            <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
+                <p>Welcome to the main section of your app. Add more content here as needed.</p>
+            </div>
 
-
-     <!-- Place modal windows here below your base layout
-            - You can tell chatgpt you are creating a bootsrrap page and
-                would like to add a modal window to your page.  Then
-                describe the modal window you want to add to your page
-                and let chatgpt generate the html for you.  Then
-                add that html to this part of the page
-    -->
+            <!-- Account Management tab content -->
+            <div class="tab-pane fade" id="account-management" role="tabpanel" aria-labelledby="account-management-tab">
+                <h2>Manage Users</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Email</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>example1@email.com</td>
+                            <td>
+                                User 1 description goes here.
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>example2@email.com</td>
+                            <td>
+                                User 2 description goes here.
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>example3@email.com</td>
+                            <td>
+                                User 3 description goes here.
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

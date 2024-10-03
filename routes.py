@@ -1,10 +1,10 @@
 import datetime
+import jwt  # Import PyJWT
 from flask import Blueprint, current_app, request, jsonify, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from extensions import db  # Import db from the newly created extensions.py file
 from model import User  # Import the User model
-import jwt
 
 # Helper function to decode the JWT token and validate the user
 def validate_token(request):
@@ -36,7 +36,6 @@ def index():
 @routes_blueprint.route('/inside')
 def inside():
     return render_template('example_app_page.html')  # Render the index.html template when accessing '/'
-
 
 # Route to handle account creation
 @routes_blueprint.route('/create_account', methods=['POST'])
@@ -88,3 +87,89 @@ def login():
     token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(hours=1))
 
     return jsonify({"message": "Login successful!", "token": token}), 200  # Return success message and token
+
+
+# Route to add a new user (requires JWT token)
+@routes_blueprint.route('/add_user', methods=['POST'])
+def add_user():
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    data = request.json  # Extract the incoming JSON data
+
+    email = data.get('email')
+    password = data.get('password')
+    description = data.get('description')
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({"error": "User with that email already exists"}), 400
+
+    hashed_password = generate_password_hash(password, method='sha256')
+    new_user = User(email=email, password=hashed_password, description=description)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "User added successfully!"}), 201
+
+
+# Route to edit a user (requires JWT token)
+@routes_blueprint.route('/edit_user/<int:user_id>', methods=['PUT'])
+def edit_user(user_id):
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    description = data.get('description')
+
+    if email:
+        user.email = email
+    if password:
+        user.password = generate_password_hash(password, method='sha256')
+    if description:
+        user.description = description
+
+    db.session.commit()
+
+    return jsonify({"message": "User updated successfully!"}), 200
+
+
+# Route to delete a user (requires JWT token)
+@routes_blueprint.route('/delete_user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": "User deleted successfully!"}), 200
+
+
+# Route to get all users (requires JWT token)
+@routes_blueprint.route('/users', methods=['GET'])
+def get_all_users():
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    users = User.query.all()  # Retrieve all users from the database
+    users_data = [{"id": user.id, "email": user.email, "description": user.description} for user in users]  # Format the user data
+
+    return jsonify(users_data), 200  # Return the list of all users
