@@ -55,6 +55,47 @@ const DataModel = {
         return this.currentUser;
     },
 
+    // Function to add a new user
+    async addUser(email, password, description) {
+        if (!email || !password || !description) {
+            console.error('Email, password, and description are required.');
+            return;
+        }
+
+        const url = this.baseUrl + 'create_account';  // API URL for adding a new user
+        const body = JSON.stringify({ email, password, description });
+
+        try {
+            const newUser = await this.fetchWithAuth(url, { method: 'POST', body });
+            this.users.push(newUser);  // Add the new user to the users array
+            console.log('User added successfully:', newUser);
+            return newUser;
+        } catch (error) {
+            console.error('Error adding user:', error);
+            throw error;
+        }
+    },
+
+    // Function to delete the selected user
+    async deleteUser() {
+        if (!this.currentUser) {
+            console.error('No user selected');
+            return;
+        }
+
+        const url = this.baseUrl + `delete_user/${this.currentUser.id}`;  // API URL for deleting the selected user
+
+        try {
+            await this.fetchWithAuth(url, { method: 'DELETE' });
+            this.users = this.users.filter(u => u.id !== this.currentUser.id);  // Remove the user from the users array
+            console.log('User deleted successfully:', this.currentUser);
+            this.currentUser = null;  // Clear the currentUser after deletion
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            throw error;
+        }
+    },
+
     // Function to edit the selected user (update email and description)
     async editSelectedUser(email, description) {
         if (!this.currentUser) {
