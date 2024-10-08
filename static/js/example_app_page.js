@@ -1,4 +1,4 @@
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', function() {
 
     // NOTE: IF YOUR APP USES WEBSOCKETS THEN UNCOMMENT THIS LINE
     //       TO ESTABLISH A CONNECTION TO THE WEBSOCKET SERVER
@@ -20,22 +20,24 @@ window.addEventListener('load', () => {
     });
     */
 
-    document.getElementById('modalCreateButton').addEventListener('click', function() {
-        // Your functionality here
-        console.log('Create button clicked!');
-    
-        // Example: Collect data from the form and do something with it
+// Listen for the form submission
+    document.getElementById('addUserForm').addEventListener('submit', function(event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Collect data from the form inputs
         var email = document.getElementById('email').value;
         var password = document.getElementById('password').value;
         var description = document.getElementById('description').value;
-    
+
         console.log('Email:', email);
         console.log('Password:', password);
         console.log('Description:', description);
 
-        addUser(email, password, description);  // Call the addUser function with the form data
-    
-        // TODO: Add your logic here for form validation, sending the data to your backend, etc.
+        // Call the addUser function with the form data
+        addUser(email, password, description);
+
+        // TODO: Add your logic here for further form validation, or feedback to the user
     });
 
     loadUsersIntoTable();  // Load users into the table on page load
@@ -69,15 +71,6 @@ async function addUser(email, password, description) {
 
         await loadUsersIntoTable();  // Refresh user list in the table after addition
 
-        // Ensure the "Account Management" tab is active after the refresh
-        var accountManagementTabButton = document.querySelector('#account-management-tab');
-        var accountManagementTab = new bootstrap.Tab(accountManagementTabButton);
-        accountManagementTab.show();
-
-        // Activate the account management tab's pane manually if necessary
-        var accountManagementPane = document.querySelector('#account-management');
-        accountManagementPane.classList.add('show', 'active');
-        document.querySelector('#main').classList.remove('show', 'active');  // Ensure the main tab is not active
     } catch (error) {
         console.error('Error adding user:', error);
         alert('Error adding user. Please try again.');
@@ -105,6 +98,7 @@ async function deleteUser(userId) {
 }
 
 // Function to load users into the HTML table
+// Function to load users into the table
 async function loadUsersIntoTable() {
     try {
         const users = await DataModel.getAllUsers();  // Get all users from DataModel
@@ -128,18 +122,17 @@ async function loadUsersIntoTable() {
             // Actions column
             const actionsCell = document.createElement('td');
 
-            // Edit button (placeholder, functionality can be added later)
+            // Edit button
             const editButton = document.createElement('button');
             editButton.className = 'btn btn-primary btn-sm me-2';
             editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
-            // Add functionality to edit button here if needed
             actionsCell.appendChild(editButton);
 
             // Delete button
             const deleteButton = document.createElement('button');
             deleteButton.className = 'btn btn-danger btn-sm';
             deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
-            deleteButton.addEventListener('click', () => deleteUser(user.id));  // Call deleteUser() with user ID
+            deleteButton.addEventListener('click', () => deleteUser(user.id));
             actionsCell.appendChild(deleteButton);
 
             row.appendChild(actionsCell);
@@ -147,6 +140,7 @@ async function loadUsersIntoTable() {
             // Add the row to the table
             tableBody.appendChild(row);
         });
+        
     } catch (error) {
         console.error('Error loading users into table:', error);
         alert('Error loading users. Please try again.');
