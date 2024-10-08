@@ -19,7 +19,24 @@ window.addEventListener('load', () => {
         addUser(email, password, description);
     });
     */
-   alert('this is the current version');
+
+    document.getElementById('modalCreateButton').addEventListener('click', function() {
+        // Your functionality here
+        console.log('Create button clicked!');
+    
+        // Example: Collect data from the form and do something with it
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var description = document.getElementById('description').value;
+    
+        console.log('Email:', email);
+        console.log('Password:', password);
+        console.log('Description:', description);
+
+        addUser(email, password, description);  // Call the addUser function with the form data
+    
+        // TODO: Add your logic here for form validation, sending the data to your backend, etc.
+    });
 
     loadUsersIntoTable();  // Load users into the table on page load
 });
@@ -49,7 +66,18 @@ async function addUser(email, password, description) {
         const result = await DataModel.addUser(email, password, description);
         console.log('User created:', result);
         alert('User successfully added!');  // Show a success message
+
         await loadUsersIntoTable();  // Refresh user list in the table after addition
+
+        // Ensure the "Account Management" tab is active after the refresh
+        var accountManagementTabButton = document.querySelector('#account-management-tab');
+        var accountManagementTab = new bootstrap.Tab(accountManagementTabButton);
+        accountManagementTab.show();
+
+        // Activate the account management tab's pane manually if necessary
+        var accountManagementPane = document.querySelector('#account-management');
+        accountManagementPane.classList.add('show', 'active');
+        document.querySelector('#main').classList.remove('show', 'active');  // Ensure the main tab is not active
     } catch (error) {
         console.error('Error adding user:', error);
         alert('Error adding user. Please try again.');
@@ -124,3 +152,8 @@ async function loadUsersIntoTable() {
         alert('Error loading users. Please try again.');
     }
 }
+
+function openAddUserModal() {
+    var addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
+    addUserModal.show();
+  }

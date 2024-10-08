@@ -17,7 +17,6 @@
     <!-- Custom CSS for styling -->
     <link href="static/css/example_app_page.css" rel="stylesheet">
 
-
     <!-- Bootstrap JavaScript for interactivity and offcanvas functionality -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -29,7 +28,6 @@
 
     <!-- JavaScript for handling websockets functionality -->
     <script src="static/js/chatsocket.js"></script> <!-- Manages WebSocket connections -->
-    <script src="static/js/example_app_page.js"></script> <!-- Handles user interactions on the websocket -->
 </head>
 <body>
     <div class="container mt-4">
@@ -55,6 +53,14 @@
             <!-- Account Management tab content -->
             <div class="tab-pane fade" id="account-management" role="tabpanel" aria-labelledby="account-management-tab">
                 <h2>Manage Users</h2>
+
+                <!-- Menu Bar -->
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-success" onclick="openAddUserModal()">
+                        <i class="fas fa-user-plus"></i> Add a New User
+                    </button>
+                </div>
+
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -111,5 +117,45 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Modal for Adding a New User -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="addUserModalLabel">Create New Account</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form id="addUserForm">
+                <!-- Email input -->
+                <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                </div>
+                <!-- Password input -->
+                <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                <!-- Description input -->
+                <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description" required></textarea>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="modalCreateButton" type="submit" class="btn btn-primary" form="addUserForm">Create Account</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+    <script src="static/js/example_app_page.js"></script> <!-- Handles user interactions on the websocket -->
+
 </body>
 </html>
