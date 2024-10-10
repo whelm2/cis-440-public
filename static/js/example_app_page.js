@@ -21,24 +21,75 @@ document.addEventListener('DOMContentLoaded', function() {
     */
 
 // Listen for the form submission
-    document.getElementById('addUserForm').addEventListener('submit', function(event) {
+document.getElementById('addUserForm').addEventListener('submit', function(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+
+    // Collect data from the form inputs
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    var description = document.getElementById('description').value;
+
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Description:', description);
+
+    // Call the addUser function with the form data
+    addUser(email, password, description).then(() => {
+        // Clear the input fields after user is added
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('description').value = '';
+
+        // Hide the modal using Bootstrap's modal instance
+        const addUserModalEl = document.getElementById('addUserModal');
+        const modalInstance = bootstrap.Modal.getInstance(addUserModalEl); // Get existing modal instance
+        modalInstance.hide();
+    }).catch((error) => {
+        console.error('Error adding user:', error);
+        alert('Error adding user. Please try again.');
+    });
+
+
+    // Load users into the table after adding a new user
+    loadUsersIntoTable();
+});
+
+
+    // Add a listener for the Edit User form submission
+    document.getElementById('editUserForm').addEventListener('submit', async function(event) {
         // Prevent the default form submission behavior
         event.preventDefault();
 
         // Collect data from the form inputs
-        var email = document.getElementById('email').value;
-        var password = document.getElementById('password').value;
-        var description = document.getElementById('description').value;
+        const email = document.getElementById('editEmail').value;
+        const description = document.getElementById('editDescription').value;
 
-        console.log('Email:', email);
-        console.log('Password:', password);
-        console.log('Description:', description);
+        try {
+            // Call the DataModel's editSelectedUser function to update the user
+            await DataModel.editSelectedUser(email, description);
 
-        // Call the addUser function with the form data
-        addUser(email, password, description);
+            // If the update was successful, clear the modal inputs
+            document.getElementById('editEmail').value = '';
+            document.getElementById('editDescription').value = '';
 
-        // TODO: Add your logic here for further form validation, or feedback to the user
+            // Hide the modal
+            const editUserModalEl = document.getElementById('editUserModal');
+            const modalInstance = bootstrap.Modal.getInstance(editUserModalEl);
+            modalInstance.hide();
+
+            // Alert that the user was successfully edited
+            alert('User successfully edited!');
+
+            // Refresh the user list in the table
+            loadUsersIntoTable();
+        } catch (error) {
+            console.error('Error editing user:', error);
+            alert('Error editing user. Please try again.');
+        }
     });
+
+
 
     loadUsersIntoTable();  // Load users into the table on page load
 });
@@ -84,6 +135,14 @@ async function deleteUser(userId) {
         return;
     }
 
+    // Ask for user confirmation before proceeding with deletion
+    const isConfirmed = confirm(`Are you sure you want to delete this user? This action cannot be undone.`);
+
+    // If the user confirms the deletion, proceed
+    if (!isConfirmed) {
+        return;  // Exit the function if the user doesn't confirm
+    }
+
     try {
         // Call DataModel's deleteUser function to delete the user by their ID
         DataModel.setSelectedUser(userId);
@@ -126,6 +185,7 @@ async function loadUsersIntoTable() {
             const editButton = document.createElement('button');
             editButton.className = 'btn btn-primary btn-sm me-2';
             editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+            editButton.addEventListener('click', () => showEditModal(user.id));
             actionsCell.appendChild(editButton);
 
             // Delete button
@@ -151,3 +211,27 @@ function openAddUserModal() {
     var addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
     addUserModal.show();
   }
+
+// Function to show the edit modal with user details
+// Function to show the edit modal with user details
+function showEditModal(userId) {
+    // Set the selected user in DataModel
+    DataModel.setSelectedUser(userId);  
+
+    // Get the selected user object from DataModel
+    const user = DataModel.getCurrentUser();  
+
+    // Check if the user exists
+    if (user) {
+        // Populate the email and description inputs in the modal with the user's data
+        document.getElementById('editEmail').value = user.email;
+        document.getElementById('editDescription').value = user.description;
+
+        // Show the edit modal
+        const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        editUserModal.show();
+    } else {
+        console.error('User not found');
+    }
+}
+

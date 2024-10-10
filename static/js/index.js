@@ -120,6 +120,20 @@ function handleRegistration(email, password, description = "", attempt = 1) {
         } else {
             // Display success message upon successful account creation
             alert('Account created successfully!');
+
+            // Clear the input fields in the registration modal
+            document.getElementById('createEmail').value = '';
+            document.getElementById('createPassword').value = '';
+            document.getElementById('createDescription').value = '';
+
+            // Hide the registration modal using Bootstrap's modal method
+            const registerModalEl = document.getElementById('createAccountModal');
+            const modalInstance = bootstrap.Modal.getInstance(registerModalEl); // Get the existing modal instance
+            modalInstance.hide();
+
+            // Populate the login form with the new credentials
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
         }
     })
     .catch((error) => {
