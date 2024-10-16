@@ -8,6 +8,7 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)  # Email field, unique and required
     password = db.Column(db.String(255), nullable=False)  # Password field, required (hashed)
     description = db.Column(db.Text, nullable=True)  # Description field, optional text
+    admin = db.Column(db.Boolean, default=False, nullable=False)  # Admin field, boolean, default is False
 
     # String representation of the User object for debugging
     def __repr__(self):
