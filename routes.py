@@ -86,7 +86,12 @@ def login():
     # Generate a JWT token that expires in 1 hour
     token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(hours=1))
 
-    return jsonify({"message": "Login successful!", "token": token}), 200  # Return success message and token
+    # Return success message, token, and the user's admin status
+    return jsonify({
+        "message": "Login successful!", 
+        "token": token,
+        "admin": user.admin  # Include the admin property in the response
+    }), 200
 
 
 # Route to add a new user (requires JWT token)
@@ -96,11 +101,16 @@ def add_user():
     if error:
         return error  # If token validation fails, return the error
 
+    # Check if the current user is an admin
+    if not current_user.admin:
+        return jsonify({"error": "You do not have the necessary permissions to perform this action"}), 403  # Return forbidden error if not admin
+
     data = request.json  # Extract the incoming JSON data
 
     email = data.get('email')
     password = data.get('password')
     description = data.get('description')
+    admin = data.get('admin', False)  # Get the admin parameter, defaulting to False
 
     if not email or not password:
         return jsonify({"error": "Missing email or password"}), 400
@@ -110,7 +120,7 @@ def add_user():
         return jsonify({"error": "User with that email already exists"}), 400
 
     hashed_password = generate_password_hash(password, method='sha256')
-    new_user = User(email=email, password=hashed_password, description=description)
+    new_user = User(email=email, password=hashed_password, description=description, admin=admin)  # Add admin parameter to the new user object
     db.session.add(new_user)
     db.session.commit()
 
@@ -124,15 +134,20 @@ def edit_user(user_id):
     if error:
         return error  # If token validation fails, return the error
 
+    # Check if the current user is an admin
+    if not current_user.admin:
+        return jsonify({"error": "You do not have the necessary permissions to perform this action"}), 403  # Return forbidden error if not admin
+
     user = User.query.get(user_id)
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 404  # Return error if user not found
 
     data = request.json
     email = data.get('email')
     password = data.get('password')
     description = data.get('description')
 
+    # Update user information if provided
     if email:
         user.email = email
     if password:
@@ -152,9 +167,13 @@ def delete_user(user_id):
     if error:
         return error  # If token validation fails, return the error
 
+    # Check if the current user is an admin
+    if not current_user.admin:
+        return jsonify({"error": "You do not have the necessary permissions to perform this action"}), 403  # Return forbidden error if not admin
+
     user = User.query.get(user_id)
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 404  # Return error if user not found
 
     db.session.delete(user)
     db.session.commit()
@@ -169,7 +188,12 @@ def get_all_users():
     if error:
         return error  # If token validation fails, return the error
 
-    users = User.query.all()  # Retrieve all users from the database
-    users_data = [{"id": user.id, "email": user.email, "description": user.description} for user in users]  # Format the user data
+    # Check if the current user is an admin
+    if not current_user.admin:
+        return jsonify({"error": "You do not have the necessary permissions to access this resource"}), 403  # Return a forbidden error if not admin
+
+    # Retrieve all users from the database
+    users = User.query.all()  
+    users_data = [{"id": user.id, "email": user.email, "description": user.description, "admin": user.admin} for user in users]  # Format the user data
 
     return jsonify(users_data), 200  # Return the list of all users

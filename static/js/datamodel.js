@@ -1,5 +1,6 @@
 const DataModel = {
     users: [],  // Placeholder for data fetched from the API
+    admin: false,
     currentUser: null,  // Placeholder for the currently selected user
     baseUrl: `${window.location.protocol}//${window.location.host}/`,  // Base URL dynamically generated for API requests
 

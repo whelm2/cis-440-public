@@ -20,40 +20,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     */
 
-// Listen for the form submission
-document.getElementById('addUserForm').addEventListener('submit', function(event) {
-    // Prevent the default form submission behavior
-    event.preventDefault();
+    // Listen for the form submission
+    document.getElementById('addUserForm').addEventListener('submit', function(event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
 
-    // Collect data from the form inputs
-    var email = document.getElementById('email').value;
-    var password = document.getElementById('password').value;
-    var description = document.getElementById('description').value;
+        // Collect data from the form inputs
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var description = document.getElementById('description').value;
 
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Description:', description);
+        console.log('Email:', email);
+        console.log('Password:', password);
+        console.log('Description:', description);
 
-    // Call the addUser function with the form data
-    addUser(email, password, description).then(() => {
-        // Clear the input fields after user is added
-        document.getElementById('email').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('description').value = '';
+        // Call the addUser function with the form data
+        addUser(email, password, description).then(() => {
+            // Clear the input fields after user is added
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('description').value = '';
 
-        // Hide the modal using Bootstrap's modal instance
-        const addUserModalEl = document.getElementById('addUserModal');
-        const modalInstance = bootstrap.Modal.getInstance(addUserModalEl); // Get existing modal instance
-        modalInstance.hide();
-    }).catch((error) => {
-        console.error('Error adding user:', error);
-        alert('Error adding user. Please try again.');
+            // Hide the modal using Bootstrap's modal instance
+            const addUserModalEl = document.getElementById('addUserModal');
+            const modalInstance = bootstrap.Modal.getInstance(addUserModalEl); // Get existing modal instance
+            modalInstance.hide();
+        }).catch((error) => {
+            console.error('Error adding user:', error);
+            alert('Error adding user. Please try again.');
+        });
+
+        loadUsersIntoTable();
     });
-
-
-    // Load users into the table after adding a new user
-    loadUsersIntoTable();
-});
 
 
     // Add a listener for the Edit User form submission
@@ -90,8 +88,18 @@ document.getElementById('addUserForm').addEventListener('submit', function(event
     });
 
 
-
-    loadUsersIntoTable();  // Load users into the table on page load
+    adminStatus = localStorage.getItem('admin');
+    alert('adminStatus: ' + adminStatus);
+    DataModel.admin = adminStatus;
+    if (adminStatus == 'true') {
+        // Load users into the table after adding a new user
+        loadUsersIntoTable();
+    } else {
+        // Disable the account management tab
+        //alert('You are not an admin');
+        document.getElementById('account-management-tab').classList.add('disabled');  // Add the 'disabled' class to the tab
+        document.getElementById('account-management-tab').setAttribute('disabled', 'true');  // Set the disabled attribute
+    }
 });
 
 // NOTE: PLACE ALL OF YOUR FUNCTIONS BELOW
@@ -173,6 +181,11 @@ async function loadUsersIntoTable() {
             emailCell.textContent = user.email;
             row.appendChild(emailCell);
 
+            // Admin status column (added next to the email)
+            const adminCell = document.createElement('td');
+            adminCell.textContent = user.admin ? 'Admin' : 'User';  // Display 'Admin' if user is an admin, otherwise 'User'
+            row.appendChild(adminCell);
+
             // Description column
             const descriptionCell = document.createElement('td');
             descriptionCell.textContent = user.description;
@@ -200,7 +213,7 @@ async function loadUsersIntoTable() {
             // Add the row to the table
             tableBody.appendChild(row);
         });
-        
+
     } catch (error) {
         console.error('Error loading users into table:', error);
         alert('Error loading users. Please try again.');

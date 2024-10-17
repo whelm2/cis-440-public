@@ -78,6 +78,7 @@ function handleLoginClick(username, password, attempt = 1) {
 
             // Storing the JWT token in localStorage
             localStorage.setItem('jwtToken', data.token);
+            localStorage.setItem('admin', data.admin);
 
             // Redirect to another page after successful login
             window.location.href = '/inside';  // Replace '/dashboard' with your desired route
