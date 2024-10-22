@@ -24,23 +24,27 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addUserForm').addEventListener('submit', function(event) {
         // Prevent the default form submission behavior
         event.preventDefault();
-
+    
         // Collect data from the form inputs
         var email = document.getElementById('email').value;
         var password = document.getElementById('password').value;
         var description = document.getElementById('description').value;
-
+        // Get the checkbox value and convert it to a boolean
+        var isAdmin = document.getElementById('isAdmin').checked;
+    
         console.log('Email:', email);
         console.log('Password:', password);
         console.log('Description:', description);
-
-        // Call the addUser function with the form data
-        addUser(email, password, description).then(() => {
+        console.log('Is Admin:', isAdmin); // Log the admin status
+    
+        // Call the addUser function with the form data, including the admin status
+        addUser(email, password, description, isAdmin).then(() => {
             // Clear the input fields after user is added
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
             document.getElementById('description').value = '';
-
+            document.getElementById('isAdmin').checked = false; // Reset the checkbox
+    
             // Hide the modal using Bootstrap's modal instance
             const addUserModalEl = document.getElementById('addUserModal');
             const modalInstance = bootstrap.Modal.getInstance(addUserModalEl); // Get existing modal instance
@@ -49,43 +53,44 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error adding user:', error);
             alert('Error adding user. Please try again.');
         });
-
+    
         loadUsersIntoTable();
     });
 
-
     // Add a listener for the Edit User form submission
-    document.getElementById('editUserForm').addEventListener('submit', async function(event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
+document.getElementById('editUserForm').addEventListener('submit', async function(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
 
-        // Collect data from the form inputs
-        const email = document.getElementById('editEmail').value;
-        const description = document.getElementById('editDescription').value;
+    // Collect data from the form inputs
+    const email = document.getElementById('editEmail').value;
+    const description = document.getElementById('editDescription').value;
+    const isAdmin = document.getElementById('editIsAdmin').checked;  // Grab the value of the isAdmin checkbox
 
-        try {
-            // Call the DataModel's editSelectedUser function to update the user
-            await DataModel.editSelectedUser(email, description);
+    try {
+        // Call the DataModel's editSelectedUser function to update the user
+        await DataModel.editSelectedUser(email, description, isAdmin);  // Pass isAdmin as the third parameter
 
-            // If the update was successful, clear the modal inputs
-            document.getElementById('editEmail').value = '';
-            document.getElementById('editDescription').value = '';
+        // If the update was successful, clear the modal inputs
+        document.getElementById('editEmail').value = '';
+        document.getElementById('editDescription').value = '';
+        document.getElementById('editIsAdmin').checked = false; // Reset the checkbox
 
-            // Hide the modal
-            const editUserModalEl = document.getElementById('editUserModal');
-            const modalInstance = bootstrap.Modal.getInstance(editUserModalEl);
-            modalInstance.hide();
+        // Hide the modal
+        const editUserModalEl = document.getElementById('editUserModal');
+        const modalInstance = bootstrap.Modal.getInstance(editUserModalEl);
+        modalInstance.hide();
 
-            // Alert that the user was successfully edited
-            alert('User successfully edited!');
+        // Alert that the user was successfully edited
+        alert('User successfully edited!');
 
-            // Refresh the user list in the table
-            loadUsersIntoTable();
-        } catch (error) {
-            console.error('Error editing user:', error);
-            alert('Error editing user. Please try again.');
-        }
-    });
+        // Refresh the user list in the table
+        loadUsersIntoTable();
+    } catch (error) {
+        console.error('Error editing user:', error);
+        alert('Error editing user. Please try again.');
+    }
+});
 
 
     adminStatus = localStorage.getItem('admin');
@@ -116,15 +121,15 @@ function sendChat(text) {
 }
 
 // Function to add a new user
-async function addUser(email, password, description) {
+async function addUser(email, password, description, isAdmin) {
     if (!email || !password || !description) {
         console.error("Email, password, and description are required.");
         return;
     }
 
     try {
-        // Use DataModel's addUser function to add the user
-        const result = await DataModel.addUser(email, password, description);
+        // Use DataModel's addUser function to add the user, including the isAdmin parameter
+        const result = await DataModel.addUser(email, password, description, isAdmin);
         console.log('User created:', result);
         alert('User successfully added!');  // Show a success message
 
@@ -239,6 +244,9 @@ function showEditModal(userId) {
         // Populate the email and description inputs in the modal with the user's data
         document.getElementById('editEmail').value = user.email;
         document.getElementById('editDescription').value = user.description;
+
+        // Set the checkbox value based on the user's admin status
+        document.getElementById('editIsAdmin').checked = user.admin;  // Update: Set checkbox for admin status
 
         // Show the edit modal
         const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));

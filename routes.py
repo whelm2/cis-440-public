@@ -110,7 +110,7 @@ def add_user():
     email = data.get('email')
     password = data.get('password')
     description = data.get('description')
-    admin = data.get('admin', False)  # Get the admin parameter, defaulting to False
+    is_admin = data.get('isAdmin', False)  # Updated: Get the admin parameter, defaulting to False
 
     if not email or not password:
         return jsonify({"error": "Missing email or password"}), 400
@@ -120,7 +120,7 @@ def add_user():
         return jsonify({"error": "User with that email already exists"}), 400
 
     hashed_password = generate_password_hash(password, method='sha256')
-    new_user = User(email=email, password=hashed_password, description=description, admin=admin)  # Add admin parameter to the new user object
+    new_user = User(email=email, password=hashed_password, description=description, admin=is_admin)  # Updated: Use isAdmin for the new user object
     db.session.add(new_user)
     db.session.commit()
 
@@ -144,16 +144,15 @@ def edit_user(user_id):
 
     data = request.json
     email = data.get('email')
-    password = data.get('password')
     description = data.get('description')
+    is_admin = data.get('admin', False)  # Get the admin parameter, defaulting to False
 
     # Update user information if provided
     if email:
         user.email = email
-    if password:
-        user.password = generate_password_hash(password, method='sha256')
     if description:
         user.description = description
+    user.admin = is_admin  # Update the admin status
 
     db.session.commit()
 

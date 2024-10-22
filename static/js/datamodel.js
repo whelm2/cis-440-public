@@ -57,15 +57,15 @@ const DataModel = {
     },
 
     // Function to add a new user
-    async addUser(email, password, description) {
+    async addUser(email, password, description, isAdmin) {
         if (!email || !password || !description) {
-            console.error('Email, password, and description are required.');
+            console.error('Email, password, description, and isAdmin are required.');
             return;
         }
-
-        const url = this.baseUrl + 'create_account';  // API URL for adding a new user
-        const body = JSON.stringify({ email, password, description });
-
+    
+        const url = this.baseUrl + 'add_user';  // API URL for adding a new user
+        const body = JSON.stringify({ email, password, description, isAdmin }); // Include isAdmin in the request body
+    
         try {
             const newUser = await this.fetchWithAuth(url, { method: 'POST', body });
             this.users.push(newUser);  // Add the new user to the users array
@@ -97,20 +97,22 @@ const DataModel = {
         }
     },
 
-    // Function to edit the selected user (update email and description)
-    async editSelectedUser(email, description) {
+    // Function to edit the selected user (update email, description, and admin status)
+    async editSelectedUser(email, description, isAdmin) {
         if (!this.currentUser) {
             console.error('No user selected');
             return;
         }
+
         const url = this.baseUrl + `edit_user/${this.currentUser.id}`;  // API URL for editing user
-        const body = JSON.stringify({ email, description });
+        const body = JSON.stringify({ email, description, admin: isAdmin }); // Include isAdmin in the body
 
         try {
             const updatedUser = await this.fetchWithAuth(url, { method: 'PUT', body });
             // Update the currentUser and users array with new values
             this.currentUser.email = updatedUser.email;
             this.currentUser.description = updatedUser.description;
+            this.currentUser.admin = updatedUser.admin;  // Update the admin status
 
             // Update the user in the users array
             const index = this.users.findIndex(u => u.id === this.currentUser.id);

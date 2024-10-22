@@ -13,3 +13,15 @@ class User(db.Model):
     # String representation of the User object for debugging
     def __repr__(self):
         return f'<User {self.email}>'
+
+class Chatroom(db.Model):
+    __tablename__ = 'chatroom'  # Specifies the table name
+
+    # Define the columns for the 'chatroom' table
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Primary key
+    name = db.Column(db.String(255), nullable=False)  # Name field, required
+    description = db.Column(db.Text, nullable=True)  # Description field, optional text
+
+    # String representation of the Chatroom object for debugging
+    def __repr__(self):
+        return f'<Chatroom {self.name}>'

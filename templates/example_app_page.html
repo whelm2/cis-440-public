@@ -123,70 +123,80 @@
     </div>
 
 
-    <!-- Modal for Adding a New User -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+   <!-- Modal for Adding a New User -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="addUserModalLabel">Create New Account</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="addUserModalLabel">Create New Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-            <form id="addUserForm">
-                <!-- Email input -->
-                <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
-                </div>
-                <!-- Password input -->
-                <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
-                </div>
-                <!-- Description input -->
-                <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description" required></textarea>
-                </div>
-            </form>
+                <form id="addUserForm">
+                    <!-- Email input -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                    </div>
+                    <!-- Password input -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                    </div>
+                    <!-- Description input -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description" required></textarea>
+                    </div>
+                    <!-- Administrator checkbox -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isAdmin" name="isAdmin">
+                        <label class="form-check-label" for="isAdmin">Account will be an administrator</label>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="modalCreateButton" type="submit" class="btn btn-primary" form="addUserForm">Create Account</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="modalCreateButton" type="submit" class="btn btn-primary" form="addUserForm">Create Account</button>
             </div>
         </div>
-        </div>
     </div>
+</div>
 
     <!-- Modal for Editing a User -->
-    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editUserForm">
-                        <!-- Email input -->
-                        <div class="mb-3">
-                            <label for="editEmail" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="editEmail" name="email" placeholder="Enter email" required>
-                        </div>
-                        <!-- Description input -->
-                        <div class="mb-3">
-                            <label for="editDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="editDescription" name="description" rows="3" placeholder="Enter description" required></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button id="modalEditButton" type="submit" class="btn btn-primary" form="editUserForm">Save Changes</button>
-                </div>
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <!-- Email input -->
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" placeholder="Enter email" required>
+                    </div>
+                    <!-- Description input -->
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3" placeholder="Enter description" required></textarea>
+                    </div>
+                    <!-- Administrator checkbox -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editIsAdmin" name="isAdmin">
+                        <label class="form-check-label" for="editIsAdmin">Account will be an administrator</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="modalEditButton" type="submit" class="btn btn-primary" form="editUserForm">Save Changes</button>
             </div>
         </div>
     </div>
+</div>
 
 
     <script src="static/js/example_app_page.js"></script> <!-- Handles user interactions on the websocket -->
