@@ -105,6 +105,9 @@ document.getElementById('editUserForm').addEventListener('submit', async functio
         document.getElementById('account-management-tab').classList.add('disabled');  // Add the 'disabled' class to the tab
         document.getElementById('account-management-tab').setAttribute('disabled', 'true');  // Set the disabled attribute
     }
+
+    // Load chatrooms into the table
+    loadChatroomsIntoTable();
 });
 
 // NOTE: PLACE ALL OF YOUR FUNCTIONS BELOW
@@ -169,7 +172,6 @@ async function deleteUser(userId) {
     }
 }
 
-// Function to load users into the HTML table
 // Function to load users into the table
 async function loadUsersIntoTable() {
     try {
@@ -222,6 +224,55 @@ async function loadUsersIntoTable() {
     } catch (error) {
         console.error('Error loading users into table:', error);
         alert('Error loading users. Please try again.');
+    }
+}
+
+// Function to load chatrooms into the table
+async function loadChatroomsIntoTable() {
+    try {
+        const chatrooms = await DataModel.getAllChatrooms();  // Get all chatrooms from DataModel
+        const tableBody = document.querySelector('#main tbody');  // Select the main div
+        tableBody.innerHTML = '';  // Clear existing content in main div
+        
+        chatrooms.forEach(chatroom => {
+            // Create a new row for each chatroom
+            const row = document.createElement('tr');
+            
+            // Chatroom name column
+            const nameCell = document.createElement('td');
+            nameCell.textContent = chatroom.name;
+            row.appendChild(nameCell);
+            
+            // Description column
+            const descriptionCell = document.createElement('td');
+            descriptionCell.textContent = chatroom.description;
+            row.appendChild(descriptionCell);
+            
+            // Actions column
+            const actionsCell = document.createElement('td');
+            
+            // Edit button
+            const editButton = document.createElement('button');
+            editButton.className = 'btn btn-primary btn-sm me-2';
+            editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+            editButton.addEventListener('click', () => showEditChatroomModal(chatroom.id));
+            actionsCell.appendChild(editButton);
+            
+            // Delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn btn-danger btn-sm';
+            deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+            deleteButton.addEventListener('click', () => deleteChatroom(chatroom.id));
+            actionsCell.appendChild(deleteButton);
+            
+            row.appendChild(actionsCell);
+            tableBody.appendChild(row);
+        });
+
+
+    } catch (error) {
+        console.error('Error loading chatrooms into table:', error);
+        alert('Error loading chatrooms. Please try again.');
     }
 }
 

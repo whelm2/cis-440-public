@@ -1,5 +1,6 @@
 const DataModel = {
     users: [],  // Placeholder for data fetched from the API
+    chatrooms: [],
     admin: false,
     currentUser: null,  // Placeholder for the currently selected user
     baseUrl: `${window.location.protocol}//${window.location.host}/`,  // Base URL dynamically generated for API requests
@@ -37,6 +38,19 @@ const DataModel = {
             return users;  // Return the users
         } catch (error) {
             console.error('Error fetching users:', error);
+            throw error;
+        }
+    },
+
+    // Function to get all chatrooms and store them in the 'chatrooms' variable
+    async getAllChatrooms() {
+        const url = this.baseUrl + 'chatrooms';  // Construct the full API URL
+        try {
+            const chatrooms = await this.fetchWithAuth(url, { method: 'GET' });
+            this.chatrooms = chatrooms;  // Store the fetched chatrooms
+            return chatrooms;  // Return the chatrooms
+        } catch (error) {
+            console.error('Error fetching chatrooms:', error);
             throw error;
         }
     },

@@ -31,12 +31,12 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="text-center">Welcome to Your App</h1>
+        <h1 class="text-center">Welcome to Chatterbox!</h1>
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">Main</button>
+                <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">Chat Rooms</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="account-management-tab" data-bs-toggle="tab" data-bs-target="#account-management" type="button" role="tab" aria-controls="account-management" aria-selected="false">Account Management</button>
@@ -47,7 +47,27 @@
         <div class="tab-content mt-3" id="myTabContent">
             <!-- Main tab content -->
             <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
-                <p>Welcome to the main section of your app. Add more content here as needed.</p>
+                <!-- Menu Bar -->
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-success me-2" onclick="openAddChatroomModal()">
+                        <i class="fas fa-user-plus"></i> Add a New Chatroom
+                    </button>
+                    <button class="btn btn-primary" onclick="loadChatroomsIntoTable()">
+                        <i class="fas fa-sync-alt"></i> Refresh Chatroom List
+                    </button>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Chatroom</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Account Management tab content -->

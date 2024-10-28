@@ -4,7 +4,7 @@ from flask import Blueprint, current_app, request, jsonify, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from extensions import db  # Import db from the newly created extensions.py file
-from model import User  # Import the User model
+from model import User, Chatroom  # Import the User model
 
 # Helper function to decode the JWT token and validate the user
 def validate_token(request):
@@ -196,3 +196,16 @@ def get_all_users():
     users_data = [{"id": user.id, "email": user.email, "description": user.description, "admin": user.admin} for user in users]  # Format the user data
 
     return jsonify(users_data), 200  # Return the list of all users
+
+# Route to get all chatrooms (requires JWT token but no admin permission needed)
+@routes_blueprint.route('/chatrooms', methods=['GET'])
+def get_all_chatrooms():
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    # Retrieve all chatrooms from the database
+    chatrooms = Chatroom.query.all()
+    chatrooms_data = [{"id": chatroom.id, "name": chatroom.name, "description": chatroom.description} for chatroom in chatrooms]  # Format the chatroom data
+
+    return jsonify(chatrooms_data), 200  # Return the list of all chatrooms
