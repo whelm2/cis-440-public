@@ -94,7 +94,7 @@ document.getElementById('editUserForm').addEventListener('submit', async functio
 
 
     adminStatus = localStorage.getItem('admin');
-    alert('adminStatus: ' + adminStatus);
+    //alert('adminStatus: ' + adminStatus);
     DataModel.admin = adminStatus;
     if (adminStatus == 'true') {
         // Load users into the table after adding a new user
