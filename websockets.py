@@ -7,6 +7,7 @@
 from flask_socketio import emit, disconnect
 from flask import request
 from flask_jwt_extended import decode_token
+from model import User  # Import the User model from models.py
 
 # IMPORTANT: import any objects from your model.py file that you need to work with here
 #            uncomment the line below and update it to match your model
@@ -69,6 +70,7 @@ def register_websocket_handlers(socketio):
     def handle_message(data):
         message = data.get('message')  # Retrieve the message text
         token = data.get('token')  # Retrieve the JWT token
+        roomId = data.get('room_id')  # Retrieve the room id
 
         if not token:
             # If no token is provided, emit an error message
@@ -82,13 +84,13 @@ def register_websocket_handlers(socketio):
             # Query the correct object from your data model to validate the token
             # EXAMPLE: grabbing the user with a matching email address
 
-            #user = User.query.filter_by(email=decoded_token['sub']).first()  # Fetch the user by email
+            user = User.query.filter_by(email=decoded_token['sub']).first()  # Fetch the user by email
 
             # EXAMPLE: if the user is found, perform any actions needed
             # for when a user connects, such as broadcasting a message
             # to all clients that the user has entered the chat
 
-            #if user:
+            if user:
             #    # when sending messages to clients, you can include
             #    # any additional property/value pairs you want to send
             #    # along with the message itself.
@@ -96,7 +98,7 @@ def register_websocket_handlers(socketio):
             #    # otherwise set broadcast=False to only send to the client that sent the message
             #
             #    # EXAMPLE: broadcasting a message to all clients including the message, the user's name, and a count of the number of connected clients
-            #    emit('broadcast_message', {'message': f"{user.name}: {message}", 'user': f"{user.name}", 'user_count': f"{count_connected_clients()}"}, broadcast=True)
+                emit('broadcast_message', {'message': message, 'user': f"{user.email}", 'room_id': roomId}, broadcast=True)
             #else:
             #   emit('broadcast_message', {'error': 'User not found'}, broadcast=False)
 

@@ -86,9 +86,9 @@ const ChatSocket = {
     /**
      * Sends a message through the Socket.IO connection.  Includes the token for authentication.
      */
-    sendMessage: function (message) {
+    sendMessage: function (message, roomId) {
         if (this.socket && this.socket.connected) {
-            this.socket.emit('send_message', { message: message, token: this.jwtToken }, (response) => {
+            this.socket.emit('send_message', { message: message, room_id: roomId, token: this.jwtToken }, (response) => {
                 if (response && response.error) {
                     console.error('Server error on emit:', response.error);  // Log server errors if any
                 } else {

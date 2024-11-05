@@ -173,6 +173,8 @@ document.getElementById('editUserForm').addEventListener('submit', async functio
 
     // Load chatrooms into the table
     loadChatroomsIntoTable();
+    ChatSocket.setMessageCallback(handleMessage);
+    ChatSocket.connect();
 });
 
 // NOTE: PLACE ALL OF YOUR FUNCTIONS BELOW
@@ -292,20 +294,24 @@ async function loadUsersIntoTable() {
     }
 }
 
-// Function to load chatrooms into the table
+// Function to load chatrooms into the table and dropdown
 async function loadChatroomsIntoTable() {
     try {
         const chatrooms = await DataModel.getAllChatrooms();  // Get all chatrooms from DataModel
-        const tableBody = document.querySelector('#main tbody');  // Select the main div
-        tableBody.innerHTML = '';  // Clear existing content in main div
+        
+        // Populate the table
+        const tableBody = document.querySelector('#main tbody');  // Select the table body
+        tableBody.innerHTML = '';  // Clear existing content in table
         
         chatrooms.forEach(chatroom => {
             // Create a new row for each chatroom
             const row = document.createElement('tr');
             
             // Chatroom name column
+           // Chatroom name column
             const nameCell = document.createElement('td');
             nameCell.textContent = chatroom.name;
+            nameCell.id = "room-"+chatroom.id;  // Set the cell's ID to "room-<id>"
             row.appendChild(nameCell);
             
             // Description column
@@ -333,7 +339,17 @@ async function loadChatroomsIntoTable() {
             row.appendChild(actionsCell);
             tableBody.appendChild(row);
         });
-
+        
+        // Populate the dropdown
+        const dropdown = document.getElementById('quick_chat_room');
+        dropdown.innerHTML = '<option selected>Select a room...</option>';  // Clear existing options, leaving default
+        
+        chatrooms.forEach(chatroom => {
+            const option = document.createElement('option');
+            option.value = chatroom.id;  // Set value as chatroom ID
+            option.textContent = chatroom.name;  // Set display text as chatroom name
+            dropdown.appendChild(option);
+        });
 
     } catch (error) {
         console.error('Error loading chatrooms into table:', error);
@@ -428,3 +444,52 @@ async function deleteChatroom(chatroomId) {
     }
 }
 
+// Function to send a quick chat message
+function quickChatSend() {
+    const message = document.getElementById('quick_chat_message').value.trim();
+    const roomId = document.getElementById('quick_chat_room').value;
+
+    // Check that both message and room are provided
+    if (!message) {
+        alert('Please enter a message before sending.');
+        return;
+    }
+    if (roomId === "Select a room..." || !roomId) {
+        alert('Please select a chat room before sending.');
+        return;
+    }
+
+    // Send the message through ChatSocket
+    ChatSocket.sendMessage(message, roomId);
+
+    // Clear out the message input box
+    document.getElementById('quick_chat_message').value = '';
+}
+
+function addGlowEffect(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        if (element.classList.contains('glow-effect')) {
+            element.classList.remove('glow-effect');
+            
+            // Re-add the class after a brief delay to restart the animation
+            setTimeout(() => {
+                element.classList.add('glow-effect');
+            }, 100); // 0.1 second delay
+        } else {
+            element.classList.add('glow-effect');
+        }
+    }
+}
+
+function handleMessage(message) {
+    // Construct the element ID using the room_id from the message
+    const elementId = `room-${message.room_id}`;
+    
+    // Check if the element exists in the DOM
+    const element = document.getElementById(elementId);
+    if (element) {
+        // If it exists, apply the glow effect
+        addGlowEffect(elementId);
+    }
+}

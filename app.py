@@ -33,7 +33,7 @@ def create_app():
     db.init_app(app)
 
     # UNCOMMENT THIS IF YOU WANT TO USE WEBSOCKETS!
-    #socketio.init_app(app, async_mode='gevent')
+    socketio.init_app(app, async_mode='gevent')
 
     jwt.init_app(app)
     cors.init_app(app)
@@ -48,8 +48,8 @@ def create_app():
 
     # UNCOMMENT THIS IF YOU WANT TO USE WEBSOCKETS!
     # Register WebSocket event handlers.
-    #from websockets import register_websocket_handlers
-    #register_websocket_handlers(socketio)
+    from websockets import register_websocket_handlers
+    register_websocket_handlers(socketio)
 
     return app
 
