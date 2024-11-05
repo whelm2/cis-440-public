@@ -3,6 +3,7 @@ const DataModel = {
     chatrooms: [],
     admin: false,
     currentUser: null,  // Placeholder for the currently selected user
+    currentChatroom: null,  // Placeholder for the currently selected chatroom
     baseUrl: `${window.location.protocol}//${window.location.host}/`,  // Base URL dynamically generated for API requests
 
     // Helper function for making authenticated API requests with retries
@@ -140,11 +141,104 @@ const DataModel = {
         }
     },
 
-    // Function to initialize the data model by loading all users
+    // Function to add a new chatroom
+    async addChatroom(name, description) {
+        if (!name || !description) {
+            console.error('Name and description are required for adding a chatroom.');
+            return;
+        }
+
+        const url = this.baseUrl + 'add_chatroom';  // API URL for adding a new chatroom
+        const body = JSON.stringify({ name, description });
+
+        try {
+            const newChatroom = await this.fetchWithAuth(url, { method: 'POST', body });
+            this.chatrooms.push(newChatroom);  // Add the new chatroom to the chatrooms array
+            console.log('Chatroom added successfully:', newChatroom);
+            return newChatroom;
+        } catch (error) {
+            console.error('Error adding chatroom:', error);
+            throw error;
+        }
+    },
+
+    // Function to delete the selected chatroom
+    async deleteSelectedChatroom() {
+        if (!this.currentChatroom) {
+            console.error('No chatroom selected');
+            return;
+        }
+
+        const chatroomId = this.currentChatroom.id;
+        const url = this.baseUrl + `delete_chatroom/${chatroomId}`;  // API URL for deleting the chatroom
+
+        try {
+            await this.fetchWithAuth(url, { method: 'DELETE' });
+            // Remove the chatroom from the chatrooms array
+            this.chatrooms = this.chatrooms.filter(c => c.id !== chatroomId);
+            console.log('Chatroom deleted successfully:', chatroomId);
+            // Clear the current chatroom after deletion
+            this.currentChatroom = null;
+        } catch (error) {
+            console.error('Error deleting chatroom:', error);
+            throw error;
+        }
+    },
+
+
+    // Function to edit the selected chatroom (update name and description)
+    async editSelectedChatroom(name, description) {
+        if (!this.currentChatroom) {
+            console.error('No chatroom selected');
+            return;
+        }
+
+        const chatroomId = this.currentChatroom.id;
+        const url = this.baseUrl + `edit_chatroom/${chatroomId}`;  // API URL for editing chatroom
+        const body = JSON.stringify({ name, description });
+
+        try {
+            const updatedChatroom = await this.fetchWithAuth(url, { method: 'PUT', body });
+            // Update the currentChatroom and chatrooms array with new values
+            this.currentChatroom.name = updatedChatroom.name;
+            this.currentChatroom.description = updatedChatroom.description;
+
+            // Update the chatroom in the chatrooms array
+            const index = this.chatrooms.findIndex(c => c.id === chatroomId);
+            if (index !== -1) {
+                this.chatrooms[index] = this.currentChatroom;
+            }
+            console.log('Chatroom updated successfully:', updatedChatroom);
+            return updatedChatroom;
+        } catch (error) {
+            console.error('Error updating chatroom:', error);
+            throw error;
+        }
+    },
+
+
+    // Function to set the current chatroom by its ID
+    setSelectedChatroom(chatroomId) {
+        const chatroom = this.chatrooms.find(c => c.id === chatroomId);
+        if (chatroom) {
+            this.currentChatroom = chatroom;  // Set the selected chatroom
+        } else {
+            console.error('Chatroom not found');
+        }
+    },
+
+    // Function to get the currently selected chatroom
+    getCurrentChatroom() {
+        return this.currentChatroom;
+    },
+
+
+    // Function to initialize the data model by loading all users and chatrooms
     async initialize() {
         try {
             await this.getAllUsers();  // Call the function to get all users and store them in the model
-            console.log('Data model initialized with users:', this.users);
+            await this.getAllChatrooms();  // Call the function to get all chatrooms and store them in the model
+            console.log('Data model initialized with users and chatrooms:', this.users, this.chatrooms);
         } catch (error) {
             console.error('Error initializing data model:', error);
         }

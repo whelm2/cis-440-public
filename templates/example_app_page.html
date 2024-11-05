@@ -183,7 +183,7 @@
     </div>
 </div>
 
-    <!-- Modal for Editing a User -->
+<!-- Modal for Editing a User -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -218,8 +218,67 @@
     </div>
 </div>
 
+<!-- Modal for Adding a New Chatroom -->
+<div class="modal fade" id="addChatroomModal" tabindex="-1" aria-labelledby="addChatroomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addChatroomModalLabel">Create New Chatroom</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addChatroomForm">
+                    <!-- Chatroom name input -->
+                    <div class="mb-3">
+                        <label for="chatroomName" class="form-label">Chatroom Name</label>
+                        <input type="text" class="form-control" id="chatroomName" name="name" placeholder="Enter chatroom name" required>
+                    </div>
+                    <!-- Description input -->
+                    <div class="mb-3">
+                        <label for="chatroomDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="chatroomDescription" name="description" rows="3" placeholder="Enter description" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="modalCreateChatroomButton" type="submit" class="btn btn-primary" form="addChatroomForm">Create Chatroom</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script src="static/js/example_app_page.js"></script> <!-- Handles user interactions on the websocket -->
+<!-- Modal for Editing a Chatroom -->
+<div class="modal fade" id="editChatroomModal" tabindex="-1" aria-labelledby="editChatroomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editChatroomModalLabel">Edit Chatroom</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editChatroomForm">
+                    <!-- Chatroom name input -->
+                    <div class="mb-3">
+                        <label for="editChatroomName" class="form-label">Chatroom Name</label>
+                        <input type="text" class="form-control" id="editChatroomName" name="name" placeholder="Enter chatroom name" required>
+                    </div>
+                    <!-- Description input -->
+                    <div class="mb-3">
+                        <label for="editChatroomDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editChatroomDescription" name="description" rows="3" placeholder="Enter description" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="modalEditChatroomButton" type="submit" class="btn btn-primary" form="editChatroomForm">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="static/js/example_app_page.js"></script> <!-- Handles user interactions on the websocket -->
 
 </body>
 </html>

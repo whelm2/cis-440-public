@@ -92,6 +92,71 @@ document.getElementById('editUserForm').addEventListener('submit', async functio
     }
 });
 
+    // Listener for adding a chatroom (To be placed inside the DOMContentLoaded event listener)
+    document.getElementById('addChatroomForm').addEventListener('submit', async function(event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Collect data from the form inputs
+        const name = document.getElementById('chatroomName').value;
+        const description = document.getElementById('chatroomDescription').value;
+
+        try {
+            // Call the DataModel's addChatroom function to add the chatroom
+            await DataModel.addChatroom(name, description);
+            console.log('Chatroom created:', name);
+            alert('Chatroom successfully added!');
+
+            // Clear the input fields after chatroom is added
+            document.getElementById('chatroomName').value = '';
+            document.getElementById('chatroomDescription').value = '';
+
+            // Hide the modal using Bootstrap's modal instance
+            const addChatroomModalEl = document.getElementById('addChatroomModal');
+            const modalInstance = bootstrap.Modal.getInstance(addChatroomModalEl);
+            modalInstance.hide();
+
+            // Refresh chatroom list in the table
+            loadChatroomsIntoTable();
+        } catch (error) {
+            console.error('Error adding chatroom:', error);
+            alert('Error adding chatroom. Please try again.');
+        }
+    });
+
+    // Listener for editing a chatroom (To be placed inside the DOMContentLoaded event listener)
+    document.getElementById('editChatroomForm').addEventListener('submit', async function(event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Collect data from the form inputs
+        const name = document.getElementById('editChatroomName').value;
+        const description = document.getElementById('editChatroomDescription').value;
+
+        try {
+            // Call the DataModel's editSelectedChatroom function to update the chatroom
+            await DataModel.editSelectedChatroom(name, description);
+
+            // Clear the modal inputs
+            document.getElementById('editChatroomName').value = '';
+            document.getElementById('editChatroomDescription').value = '';
+
+            // Hide the modal
+            const editChatroomModalEl = document.getElementById('editChatroomModal');
+            const modalInstance = bootstrap.Modal.getInstance(editChatroomModalEl);
+            modalInstance.hide();
+
+            // Alert that the chatroom was successfully edited
+            alert('Chatroom successfully edited!');
+
+            // Refresh chatroom list in the table
+            loadChatroomsIntoTable();
+        } catch (error) {
+            console.error('Error editing chatroom:', error);
+            alert('Error editing chatroom. Please try again.');
+        }
+    });
+
 
     adminStatus = localStorage.getItem('admin');
     //alert('adminStatus: ' + adminStatus);
@@ -304,6 +369,62 @@ function showEditModal(userId) {
         editUserModal.show();
     } else {
         console.error('User not found');
+    }
+}
+
+// Function to open the Add Chatroom Modal
+function openAddChatroomModal() {
+    var addChatroomModal = new bootstrap.Modal(document.getElementById('addChatroomModal'));
+    addChatroomModal.show();
+}
+
+// Function to show the Edit Chatroom Modal with chatroom details
+function showEditChatroomModal(chatroomId) {
+    // Set the selected chatroom in DataModel
+    DataModel.setSelectedChatroom(chatroomId);  
+
+    // Get the selected chatroom object from DataModel
+    const chatroom = DataModel.getCurrentChatroom();  
+
+    // Check if the chatroom exists
+    if (chatroom) {
+        // Populate the name and description inputs in the modal with the chatroom's data
+        document.getElementById('editChatroomName').value = chatroom.name;
+        document.getElementById('editChatroomDescription').value = chatroom.description;
+
+        // Show the edit chatroom modal
+        const editChatroomModal = new bootstrap.Modal(document.getElementById('editChatroomModal'));
+        editChatroomModal.show();
+    } else {
+        console.error('Chatroom not found');
+    }
+}
+
+// Function to delete a chatroom by ID
+async function deleteChatroom(chatroomId) {
+    if (!chatroomId) {
+        console.error("Chatroom ID is required for deletion.");
+        return;
+    }
+
+    // Ask for user confirmation before proceeding with deletion
+    const isConfirmed = confirm(`Are you sure you want to delete this chatroom? This action cannot be undone.`);
+
+    // If the user confirms the deletion, proceed
+    if (!isConfirmed) {
+        return;  // Exit the function if the user doesn't confirm
+    }
+
+    try {
+        // Call DataModel's deleteChatroom function to delete the chatroom by its ID
+        DataModel.setSelectedChatroom(chatroomId);
+        await DataModel.deleteSelectedChatroom();
+        console.log(`Chatroom with ID ${chatroomId} deleted.`);
+        alert('Chatroom successfully deleted!');  // Show a success message
+        await loadChatroomsIntoTable();  // Refresh chatroom list in the table after deletion
+    } catch (error) {
+        console.error('Error deleting chatroom:', error);
+        alert('Error deleting chatroom. Please try again.');
     }
 }
 

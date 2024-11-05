@@ -209,3 +209,65 @@ def get_all_chatrooms():
     chatrooms_data = [{"id": chatroom.id, "name": chatroom.name, "description": chatroom.description} for chatroom in chatrooms]  # Format the chatroom data
 
     return jsonify(chatrooms_data), 200  # Return the list of all chatrooms
+
+# Route to add a new chatroom (requires JWT token)
+@routes_blueprint.route('/add_chatroom', methods=['POST'])
+def add_chatroom():
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    data = request.json  # Extract the incoming JSON data
+
+    name = data.get('name')
+    description = data.get('description')
+
+    if not name or not description:
+        return jsonify({"error": "Missing name or description"}), 400
+
+    new_chatroom = Chatroom(name=name, description=description)
+    db.session.add(new_chatroom)
+    db.session.commit()
+
+    return jsonify({"message": "Chatroom added successfully!"}), 201
+
+# Route to edit a chatroom (requires JWT token)
+@routes_blueprint.route('/edit_chatroom/<int:chatroom_id>', methods=['PUT'])
+def edit_chatroom(chatroom_id):
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    chatroom = Chatroom.query.get(chatroom_id)
+    if not chatroom:
+        return jsonify({"error": "Chatroom not found"}), 404  # Return error if chatroom not found
+
+    data = request.json
+    name = data.get('name')
+    description = data.get('description')
+
+    # Update chatroom information if provided
+    if name:
+        chatroom.name = name
+    if description:
+        chatroom.description = description
+
+    db.session.commit()
+
+    return jsonify({"message": "Chatroom updated successfully!"}), 200
+
+# Route to delete a chatroom (requires JWT token)
+@routes_blueprint.route('/delete_chatroom/<int:chatroom_id>', methods=['DELETE'])
+def delete_chatroom(chatroom_id):
+    current_user, error = validate_token(request)
+    if error:
+        return error  # If token validation fails, return the error
+
+    chatroom = Chatroom.query.get(chatroom_id)
+    if not chatroom:
+        return jsonify({"error": "Chatroom not found"}), 404  # Return error if chatroom not found
+
+    db.session.delete(chatroom)
+    db.session.commit()
+
+    return jsonify({"message": "Chatroom deleted successfully!"}), 200
