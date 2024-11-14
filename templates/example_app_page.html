@@ -292,6 +292,33 @@
     </div>
 </div>
 
+<!-- Modal for Displaying Chatroom Messages -->
+<div class="modal fade" id="displayChatroomModal" tabindex="-1" aria-labelledby="displayChatroomModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="displayChatroomModalLabel">Chatroom Name</h5> <!-- Title for chatroom name -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body d-flex flex-column" style="height: 70vh;">
+                <!-- Scrollable chat messages area -->
+                <div id="chatroomMessages" class="flex-grow-1 overflow-auto mb-3 p-2 border rounded" style="background-color: #f8f9fa;">
+                    <!-- Messages will be displayed here -->
+                </div>
+
+                <!-- Message input area -->
+                <div class="d-flex">
+                    <textarea id="chatMessageInput" class="form-control" placeholder="Type your message here..." rows="1" style="resize: none;"></textarea>
+                    <button type="button" class="btn btn-primary ms-2" onclick="sendChatMessage()" style="height: 100%;">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="static/js/example_app_page.js"></script> <!-- Handles user interactions on the websocket -->
 
 </body>

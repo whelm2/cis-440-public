@@ -157,6 +157,18 @@ document.getElementById('editUserForm').addEventListener('submit', async functio
         }
     });
 
+    // Get the textarea element
+    const chatMessageInput = document.getElementById('chatMessageInput');
+
+    // Add event listener for the "keydown" event
+    chatMessageInput.addEventListener('keydown', (event) => {
+        // Check if the "Enter" key is pressed
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Prevents adding a new line
+            sendChatMessage();      // Calls the sendChatMessage function
+        }
+    });
+
 
     adminStatus = localStorage.getItem('admin');
     //alert('adminStatus: ' + adminStatus);
@@ -322,6 +334,13 @@ async function loadChatroomsIntoTable() {
             // Actions column
             const actionsCell = document.createElement('td');
             
+            // join button
+            const joinButton = document.createElement('button');
+            joinButton.className = 'btn btn-success btn-sm me-2';
+            joinButton.innerHTML = '<i class="fas fa-door-open"></i> Join';
+            joinButton.addEventListener('click', () => openChatroomModal(chatroom.id));
+            actionsCell.appendChild(joinButton);
+
             // Edit button
             const editButton = document.createElement('button');
             editButton.className = 'btn btn-primary btn-sm me-2';
@@ -492,4 +511,92 @@ function handleMessage(message) {
         // If it exists, apply the glow effect
         addGlowEffect(elementId);
     }
+    
+    // Get the current chatroom ID from DataModel and check if it exists
+    const currentChatroom = DataModel.getCurrentChatroom();
+    
+    // Ensure the current chatroom has a valid ID property
+    if (!currentChatroom || !currentChatroom.id) {
+        return;
+    }
+    // Compare the message room_id with the current chatroom's ID
+    if (parseInt(message.room_id) === currentChatroom.id) {
+
+        // Get the messages div in the modal
+        const messagesDiv = document.getElementById('chatroomMessages');
+        
+        // Create a new message element with the user's name as a header
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('message-container', 'mb-2', 'p-2', 'border', 'rounded');
+
+        const userHeader = document.createElement('h6');
+        userHeader.textContent = message.user;  // Display user's name
+        userHeader.classList.add('mb-1', 'text-primary');  // Style as needed
+
+        const messageContent = document.createElement('p');
+        messageContent.textContent = message.message;  // Display the message content
+
+        // Append the user header and message content to the message container
+        messageContainer.appendChild(userHeader);
+        messageContainer.appendChild(messageContent);
+        
+        // Add the new message to the messages div
+        messagesDiv.appendChild(messageContainer);
+        
+        // Scroll to the bottom of the messages div to show the latest message
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 }
+
+async function openChatroomModal(chatroomId) {
+    // Set the selected chatroom in the DataModel
+    DataModel.setSelectedChatroom(chatroomId);
+    
+    // Get the current chatroom details
+    const chatroom = DataModel.getCurrentChatroom();
+
+    // Update the modal title to the chatroom's name
+    const modalTitle = document.getElementById('displayChatroomModalLabel');
+    modalTitle.textContent = chatroom.name;
+
+    // Clear the messages div
+    const messagesDiv = document.getElementById('chatroomMessages');
+    messagesDiv.innerHTML = '';
+
+    // Get the DOM element for the modal
+    const chatroomModalElement = document.getElementById('displayChatroomModal');
+
+    // Add the event listener to the DOM element
+    chatroomModalElement.addEventListener('hidden.bs.modal', () => {
+        DataModel.currentChatroom=null;  // Set current chatroom to null when the modal is hidden
+    });
+
+    // Initialize the Bootstrap modal instance
+    const chatroomModal = new bootstrap.Modal(chatroomModalElement);
+    chatroomModal.show();
+}
+
+function sendChatMessage() {
+    // Get the message from the textarea
+    const message = document.getElementById('chatMessageInput').value.trim();
+    
+    // Get the current chatroom ID from DataModel
+    const chatroomId = DataModel.getCurrentChatroom().id;
+
+    // Check if both the message and chatroom ID have values
+    if (!message) {
+        alert('Please enter a message before sending.');
+        return;
+    }
+    if (!chatroomId) {
+        alert('No chatroom selected. Please select a chatroom before sending a message.');
+        return;
+    }
+
+    // Send the message through ChatSocket
+    ChatSocket.sendMessage(message, chatroomId);
+
+    // Clear the textarea
+    document.getElementById('chatMessageInput').value = '';
+}
+
